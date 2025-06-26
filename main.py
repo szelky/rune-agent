@@ -9,6 +9,10 @@ def main():
     load_dotenv()
 
     args = sys.argv[1:]
+    verbose = False
+    if args[-1] == "--verbose":
+        args = sys.argv[1:-1]
+        verbose = True
     # Check if the user provided a prompt
     # If not, print usage instructions and exit with 1
     if not args:
@@ -16,10 +20,6 @@ def main():
         print('\nUsage: python main.py "your prompt here"')
         print('Example: python main.py "How do I build a calculator app?"')
         sys.exit(1)
-    verbose = False
-    if args[-1] == "--verbose":
-        verbose = True
-        args.pop()
     # Join the arguments to form the user prompt as a single string
     user_prompt = " ".join(args)
     # Initialize the Google GenAI client
@@ -42,6 +42,8 @@ def generate_content(client, messages, verbose):
     )
     print("Response:")
     print(response.text)
+    
+    # It prints tokens count and prompt for verbose command
     if verbose:
         print(f"User prompt: {" ".join(sys.argv[1:])}")
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")

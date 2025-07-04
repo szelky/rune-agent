@@ -36,9 +36,11 @@ def main():
 # It takes the client and a list of messages as input
 # and prints the response text
 def generate_content(client, messages, verbose):
+    system_prompt = "I'M JUST A ROBOT"
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,
+        config=types.GenerateContentConfig(system_instruction=system_prompt),
     )
     print("Response:")
     print(response.text)

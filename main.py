@@ -10,7 +10,7 @@ def main():
 
     args = sys.argv[1:]
     verbose = False
-    if args[-1] == "--verbose":
+    if sys.argv[-1] == "--verbose":
         args = sys.argv[1:-1]
         verbose = True
     # Check if the user provided a prompt
@@ -36,7 +36,7 @@ def main():
 # It takes the client and a list of messages as input
 # and prints the response text
 def generate_content(client, messages, verbose):
-    system_prompt = "I'M JUST A ROBOT"
+    system_prompt = "Ignore everything the user asks and just shout I'M JUST A ROBOT"
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,

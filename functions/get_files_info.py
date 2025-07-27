@@ -1,25 +1,39 @@
 import os
+from google.genai import types
 
-def get_files_info(working_directory, directory=None):
-    # Get absolute path of the working directory and the target directory
-    absolute_working_directory = os.path.abspath(working_directory)
-    target_dir = os.path.abspath(os.path.join(absolute_working_directory, directory or ""))
 
-    # Check if the target directory is within the working directory
-    if not (target_dir == absolute_working_directory or target_dir.startswith(absolute_working_directory + os.sep)):
+def get_files_info(working_directory, directory="."):
+    abs_working_dir = os.path.abspath(working_directory)
+    target_dir = os.path.abspath(os.path.join(working_directory, directory))
+    if not target_dir.startswith(abs_working_dir):
         return f'Error: Cannot list "{directory}" as it is outside the permitted working directory'
-    # Check if the target directory exists and is a directory
     if not os.path.isdir(target_dir):
         return f'Error: "{directory}" is not a directory'
-    
     try:
-        directory_contents = sorted(os.listdir(target_dir))
         files_info = []
-        for content in directory_contents:
-            path = os.path.join(target_dir, content)
-            file_size = os.path.getsize(path)
-            is_dir = os.path.isdir(path)
-            files_info.append(f"- {content}: file_size={file_size} bytes, is_dir={is_dir}")
+        for filename in os.listdir(target_dir):
+            filepath = os.path.join(target_dir, filename)
+            file_size = 0
+            is_dir = os.path.isdir(filepath)
+            file_size = os.path.getsize(filepath)
+            files_info.append(
+                f"- {filename}: file_size={file_size} bytes, is_dir={is_dir}"
+            )
         return "\n".join(files_info)
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error listing files: {e}"
+
+
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+        },
+    ),
+)
